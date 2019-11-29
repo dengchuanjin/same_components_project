@@ -6,8 +6,7 @@
 </template>
 
 <script>
-import upLoadFile from "@/components/UpLoadFile";
-import { log } from 'util';
+import upLoadFile from "@/components/PC/UpLoadFile";
 
 export default {
   name: "Home",
