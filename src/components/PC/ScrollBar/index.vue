@@ -49,13 +49,11 @@ export default {
   watch: {
     loading(val) {
       if( val ) {
-        this.resetEl();
+        this.initEl();
       }      
     }
   },
   created() {
-    console.log(this.loading);
-    
   },
   mounted() {
     this.$nextTick(() => {
@@ -90,6 +88,10 @@ export default {
         this.scrollBodyObj.maxTranslateY *
         (this.sliderObj.top / this.sliderObj.maxTop);
 
+      if( this.lastNum ) {
+        
+      }
+
       this.sliderObj.top = num;
       this.scrollBodyObj.translateY = translateY;
     },
@@ -123,8 +125,10 @@ export default {
 
     // 滚动到底部
     scrollToDown() {
-      if( !this.loading ) {        
-        this.$emit('down');
+      if( !this.loading ) {
+        console.log(1);
+           
+        // this.$emit('down');
       }
     },
 
@@ -145,17 +149,17 @@ export default {
       if (scrollBarWrap && scrollBody) {
         let num = this.scrollBodyObj.height / this.barWrapObj.height; // 计算滚动条高度占外框高度的比例
         if (num <= 1) {
+          this.sliderObj.height = 0;
+          this.sliderObj.maxTop = 0;
           return;
         }
         this.sliderObj.height = this.barWrapObj.height / num;
         this.sliderObj.maxTop = Math.floor(
           this.barWrapObj.height - this.sliderObj.height
         );
+        this.sliderObj.top = this.sliderObj.maxTop * (this.scrollBodyObj.translateY / this.scrollBodyObj.maxTranslateY);
       }
-    },
-
-    // 重置
-    resetEl() {}
+    }
   }
 };
 </script>
