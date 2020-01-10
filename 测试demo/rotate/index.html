@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>旋转的车标</title>
+	<style type="text/css">
+		.icon {
+			width: 100px;
+			height: 100px;
+			background: url("./icon.png") 0 0 / 100% 100% no-repeat;
+			margin: 300px auto 0;
+			padding: 100px;
+			background-clip: content-box;
+			border: 10px solid rgba(0,0,0,.1);
+			/*animation: rotateIcon .2s linear infinite;*/
+		}
+
+		@keyframes rotateIcon {
+			to {
+				transform: rotate(3600deg);
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="icon"></div>
+	
+	<script>
+		// let num = 10;
+		// let timer = setInterval(() => {
+		// 	let n = Math.ceil( num * .2)
+		// 	num -= n;
+		// 	console.log(num);
+		// }, 100)
+	</script>
+</body>
+</html>

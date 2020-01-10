@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<style type="text/css">
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+			}
+
+			body {
+				margin: 0;
+			}
+
+			body > div {
+				width: 50px;
+				height: 50px;
+				background-color: #ccc;
+				border-radius: 5px;
+				position: absolute;
+				top: 0;
+				left: 0;
+				font: 16px/50px "思源黑体";
+				text-align: center;
+				color: #666;
+			}
+			
+			
+			
+			body .box {
+				width: 100px;
+				height: 100px;
+				background-color: #409EFF;
+				border-radius: 10px;
+				top: 300px;
+				left: 100px;
+				padding: 10px;
+				z-index: 2;
+			}
+
+			.box>div {
+				float: left;
+				position: static;
+				width: 50px;
+				height: 50px;
+				background-color: #ccc;
+				border-radius: 5px;
+				text-align: center;
+				color: #666;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="box"></div>
+
+		<script type="text/javascript">
+			class opeEl {
+				//获取元素
+				getEl(elStr) {
+					return document.querySelector(elStr);
+				};
+
+				//删除页面中的元素
+				removeEL(el) {
+					el.parentNode.removeChild(el);
+				};
+
+				//删除指定父级下的单个元素
+				removeAppointEl(pEl, cEl) {
+					pEl.removeChild(cEl);
+				};
+
+				//克隆元素到另一个元素子集
+				deepEl(toEl, el) {
+					toEl.appendChild(el.cloneNode(true));
+				};
+
+				//拖拽
+				dragEl(el) {
+					let _this = this;
+
+					//父级元素及宽高
+					let pEl = el.parentNode;
+					let pW = pEl.clientWidth;
+					let pH = pEl.clientHeight;
+
+					//元素宽高
+					let elW = el.clientWidth;
+					let elH = el.clientHeight;
+
+					//计算最大拖拽距离
+					let maxX = pW - elW;
+					let maxY = pH - elH;
+
+					//鼠标在元素上的坐标
+					let disx, disy;
+
+					//设置最小拖拽距离
+					let minX = 0;
+					let minY = 0;
+
+					el.addEventListener('mousedown', function(ev) {
+						let e = ev || window.event;
+						e.preventDefault(); //处理事件捕获
+						disx = e.pageX - el.offsetLeft; //记录鼠标当前的位置
+						disy = e.pageY - el.offsetTop;
+
+						document.addEventListener('mousemove', mouseM, false);
+
+						function mouseM(ev) {
+							let e = ev || window.event; //兼容了ie浏览器
+							e.preventDefault(); //处理事件捕获
+							let nowX = e.pageX - disx;
+							let nowY = e.pageY - disy;
+
+							//拖拽限制
+							if (nowX < minX && nowY < minY) {
+								nowX = minX;
+								nowY = minY;
+							} else if (nowX > maxX && nowY > maxY) {
+								nowX = maxX;
+								nowY = maxY;
+							} else if (nowX < minX && nowY > maxY) {
+								nowX = minX;
+								nowY = maxY;
+							} else if (nowY < minY && nowX > maxX) {
+								nowY = minY;
+								nowX = maxX;
+							} else if (nowX > maxX) {
+								nowX = maxX;
+							} else if (nowY > maxY) {
+								nowY = maxY;
+							} else if (nowX < minX) {
+								nowX = minX;
+							} else if (nowY < minY) {
+								nowY = minY;
+							}
+							el.style.left = nowX + "px";
+							el.style.top = nowY + "px";
+							// console.log(randomNum[0].x);
+							
+							let bT = nowY;
+							let bR = nowX + elW;
+							let bB = nowY + elH;
+							let bL = nowX;
+							
+							randomNum.forEach((item, index) => {
+								let sT = item.y;
+								let sR = item.x + smEl;
+								let sB = item.y + smEl;
+								let sL = item.x;
+								if (
+									bB > sT && bR > sL && bL < sR && bT < sB
+								) {
+									_this.deepEl(el, document.body.querySelectorAll('.randomBox')[index]);
+									_this.removeAppointEl(document.body, document.querySelectorAll('body > .randomBox')[index])
+								}
+							})
+						}
+						//不能放里面  会执行多次
+						el.addEventListener('mouseup', function(ev) {
+							var e = ev || window.event;
+							e.preventDefault(); //处理事件捕获
+							document.removeEventListener('mousemove', mouseM);
+						}, false);
+
+					}, false);
+				}
+			}
+
+			let num = 2;
+			let smEl = 50;
+
+			let bodyW = document.body.clientWidth - smEl;
+			let bodyH = document.body.clientHeight - smEl;
+
+			let randomNum = [];
+
+			//创建横向坐标;
+			function createX() {
+				return Math.floor(Math.random() * bodyW);
+			};
+
+			//创建纵向坐标
+			function createY() {
+				return Math.floor(Math.random() * bodyH);
+			};
+
+			//检测是否存在
+			function testExistence(obj) {
+				let newObj = obj;
+				if (!randomNum.length) {
+					return newObj;
+				}
+				for (let i = 0; i < randomNum.length; i++) {
+					if (randomNum[i].x == newObj.x || randomNum[i].y == newObj.y) {
+						newObj.x = createX();
+						newObj.y = createY();
+						testExistence(newObj);
+					} else {
+						return newObj;
+					}
+				}
+			}
+
+			for (let i = 0; i < num; i++) {
+				let obj = {};
+				obj.x = createX();
+				obj.y = createY();
+				randomNum.push(testExistence(obj));
+			}
+
+			function createEl() {
+				let str = "";
+				for (let i = 0; i < randomNum.length; i++) {
+					str +=
+						`<div class="randomBox" style="top: ${randomNum[i].y}px; left: ${randomNum[i].x}px">${i+1}</div>`
+				}
+
+				return str;
+			}
+
+			document.body.innerHTML += createEl();
+
+			let $ = new opeEl();
+
+			$.dragEl($.getEl('.box'));
+			
+			// setTimeout(() => {
+			// 	$.deepEl($.getEl('.box'), $.getEl('.moveBox'));
+			// 	$.removeAppointEl(document.body, $.getEl('body > .moveBox'));
+			// 	console.log(document.body.innerHTML);
+			// }, 2000)
+		</script>
+	</body>
+
+</html>

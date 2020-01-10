@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+<script type="text/javascript">
+	let fn = function() {
+		return new Promise(function(resolve, reject) {
+			let xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = () => {
+				if( xhr.readyState == 4 ) {
+					if( xhr.status == 200 ) {
+						let data = JSON.parse(xhr.responseText);
+						console.log(data);
+					} else {
+						console.log(xhr.responseText);
+					}
+				}
+			}
+			// 请求进度
+			xhr.onprogress = (event) => {
+				console.log(Math.floor(event.loaded / event.total * 100) + '%');
+			} 
+			
+			xhr.open("POST", "https://hly.1000da.com.cn/AreaFull/SelectProvice", true);
+			xhr.send(JSON.stringify({ areaPid: 3337 }));
+			// xhr.setRequsetHeader('Content-Type', 'application/x-www-form-urlencoded');
+		})
+	};
+	fn();
+</script>
+</body>
+</html>

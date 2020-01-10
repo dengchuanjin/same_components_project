@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>input</title>
+		<style>
+			:root {
+				--error-color: red;
+			}
+
+			.form>input {
+				margin-bottom: 10px;
+			}
+
+			.form>.f-tips {
+				color: var(--error-color);
+				display: none;
+				display: block;
+			}
+
+			input[type="text"]:invalid~input[type="submit"],
+			input[type="password"]:invalid~input[type="submit"] {
+				display: none;
+			}
+
+			input[required]:focus:invalid+span {
+				display: inline;
+			}
+
+			input[required]:empty+span {
+				display: none;
+			}
+
+			input[required]:invalid:not(:placeholder-shown)+span {}
+		</style>
+		<style type="text/css">
+			.input {
+				outline: none;
+				direction: ltr;
+				text-decoration: blink;
+			}
+
+			.input:focus {
+				outline: #000 solid 1px;
+			}
+
+			p {
+				margin: 0;
+				text-decoration: line-through;
+				text-transform: capitalize;
+				font-variant: small-caps;
+				padding: 100px;
+				background-color: #ccc;
+				background-clip: border-box;
+				border: 10px solid rgba(255, 0, 0, .1);
+				text-outline: 2px 2px #ff0000;
+			}
+		</style>
+	</head>
+	<body>
+		<form class="form" id="form" method="get" action="">
+			账号：
+			<input data-title="账号" placeholder="请输入正确的账号" pattern="\w{6,10}" name="account" type="text" required />
+			<span class="f-tips">请输入正确的账号</span>
+			<br />
+			密码：
+			<input data-title="密码" placeholder="请输入正确的密码" pattern="\w{6,10}" name="password" type="password" required />
+			<span class="f-tips">请输入正确的密码</span>
+			<br />
+			<input name="button" type="submit" value="提交" />
+		</form>
+
+		<input type="text" placeholder="请输入" class="input">
+
+		<p>this is same words</p>
+
+	</body>
+</html>
