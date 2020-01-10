@@ -7,11 +7,17 @@ export default [
     },
 
     // 自定义滚动条
-    
     {
         path: '/scrollTemplate',
         name: 'ScrollTemplate',
         component: () => import("@/views/ScrollTemplate")
+    },
+
+    // 高阶组件 
+    {
+        path: '/higherOrderCom',
+        name: 'HigherOrderCom',
+        component: () => import("@/views/HigherOrderCom")
     },
 
 ]
