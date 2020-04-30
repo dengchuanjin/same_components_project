@@ -1,6 +1,6 @@
 <template>
   <div id="wrap">
-    <scroll-bar @down="addData" :loading="isLoading">
+    <scroll-bar @down="addData" :loading="isLoading" >
       <ul>
         <li v-for="(item, index) in num" :key="index">这是一段内容这是一段内容这是一段内容这是一段内容这是一段内容 》》》{{index}}</li>
       </ul>
@@ -26,7 +26,7 @@ export default {
   methods: {
     // 添加数据
     addData() {
-      this.isLoading = true;
+      this.isLoading = true;      
       setTimeout(() => {
         this.num += 10;
         this.isLoading = false;

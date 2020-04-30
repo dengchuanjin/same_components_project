@@ -4,6 +4,7 @@
       class="scrollBody"
       ref="scrollBody"
       @mousewheel.stop.prevent="whellScrollBody"
+      @DOMMouseScroll.stop.prevent="whellScrollBody"
       :style="{ transform: `translateY(-${scrollBodyObj.translateY}px)` }"
     >
       <slot></slot>
@@ -11,20 +12,22 @@
     <div
       class="slider"
       ref="slider"
-      :style="[{ height: sliderObj.height + 'px' }, { top: sliderObj.top + 'px' }]"
+      :style="[{ height: sliderObj.height + 'px' }, { top: sliderObj.top + 'px' }, { width: barWidth + 'px' }, { borderRadius: barWidth / 2 + 'px' }]"
       @mousedown="downSlider"
       @mouseup="upSlider"
     ></div>
   </div>
 </template>
 <script>
-import { log } from "util";
 export default {
   name: "ScrollBar",
   props: {
     loading: {
       type: Boolean,
       default: () => false
+    },
+    barWidth: {
+      default: () => 10
     }
   },
   data() {
@@ -41,20 +44,21 @@ export default {
         height: 0,
         top: 0,
         maxTop: 0,
-        downTop: 0
+        downTop: 0 // 按下位置
       },
       lastNum: 0
     };
   },
   watch: {
     loading(val) {
-      if( val ) {
-        this.initEl();
-      }      
+      if (!val) {
+        this.$nextTick(() => {
+          this.initEl();
+        });
+      }
     }
   },
-  created() {
-  },
+  created() {},
   mounted() {
     this.$nextTick(() => {
       this.initEl();
@@ -65,9 +69,12 @@ export default {
     downSlider(ev) {
       let e = ev || event;
       this.sliderObj.downTop = e.clientY;
+      console.log(e.clientY);
+
       document.addEventListener("mousemove", this.moveSlider);
       document.addEventListener("mouseup", () => {
         this.lastNum = this.sliderObj.top;
+        console.log("lastNum", this.lastNum);
         document.removeEventListener("mousemove", this.moveSlider);
       });
     },
@@ -75,7 +82,9 @@ export default {
     // 移动滑块
     moveSlider(ev) {
       let e = ev || event;
+
       let num = e.clientY - this.sliderObj.downTop + this.lastNum;
+
       let translateY = 0;
       if (num < 0) {
         num = 0;
@@ -88,8 +97,7 @@ export default {
         this.scrollBodyObj.maxTranslateY *
         (this.sliderObj.top / this.sliderObj.maxTop);
 
-      if( this.lastNum ) {
-        
+      if (this.lastNum) {
       }
 
       this.sliderObj.top = num;
@@ -102,50 +110,46 @@ export default {
     // 滚动内容体
     whellScrollBody(ev) {
       let e = ev || event;
-      if (e.deltaY > 0) {
-        this.scrollBodyObj.translateY += 10;
+      if (e.wheelDelta < 0 || e.detail > 0) {
+        this.scrollBodyObj.translateY += 20;
         if (this.scrollBodyObj.translateY > this.scrollBodyObj.maxTranslateY) {
           this.scrollBodyObj.translateY = this.scrollBodyObj.maxTranslateY;
           this.scrollToDown();
         }
-      } else if (e.deltaY < 0) {
-        this.scrollBodyObj.translateY -= 10;
+      } else if (e.wheelDelta > 0 || e.detail < 0) {
+        this.scrollBodyObj.translateY -= 20;
         if (this.scrollBodyObj.translateY < 0) {
           this.scrollBodyObj.translateY = 0;
         }
       }
-      this.sliderObj.top = this.sliderObj.maxTop * (this.scrollBodyObj.translateY / this.scrollBodyObj.maxTranslateY);
+      this.sliderObj.top =
+        this.sliderObj.maxTop *
+        (this.scrollBodyObj.translateY / this.scrollBodyObj.maxTranslateY);
       this.lastNum = this.sliderObj.top;
     },
 
     // 设置滚动位置
-    setScrollPosition(val) {
-      
-    },
+    setScrollPosition(val) {},
 
     // 滚动到底部
     scrollToDown() {
-      if( !this.loading ) {
-        console.log(1);
-           
-        // this.$emit('down');
+      if (!this.loading) {
+        this.$emit("down");
       }
     },
 
     // 初始化元素
-    initEl() {      
+    initEl() {
       let scrollBarWrap = this.$refs.scrollBarWrap;
       if (scrollBarWrap) {
         this.barWrapObj.height = scrollBarWrap.clientHeight;
       }
-
       let scrollBody = this.$refs.scrollBody;
       if (scrollBody) {
         this.scrollBodyObj.height = scrollBody.clientHeight;
         this.scrollBodyObj.maxTranslateY =
           scrollBody.clientHeight - this.barWrapObj.height;
       }
-
       if (scrollBarWrap && scrollBody) {
         let num = this.scrollBodyObj.height / this.barWrapObj.height; // 计算滚动条高度占外框高度的比例
         if (num <= 1) {
@@ -157,7 +161,9 @@ export default {
         this.sliderObj.maxTop = Math.floor(
           this.barWrapObj.height - this.sliderObj.height
         );
-        this.sliderObj.top = this.sliderObj.maxTop * (this.scrollBodyObj.translateY / this.scrollBodyObj.maxTranslateY);
+        this.sliderObj.top =
+          this.sliderObj.maxTop *
+          (this.scrollBodyObj.translateY / this.scrollBodyObj.maxTranslateY);
       }
     }
   }
@@ -166,6 +172,7 @@ export default {
 <style scoped>
 #scrollBarWrap {
   position: relative;
+  background-color: transparent;
   height: 100%;
   overflow: hidden;
   -moz-user-select: -moz-none;
@@ -178,14 +185,15 @@ export default {
 }
 
 .slider {
-  width: 10px;
-  height: 0px;
+  width: 0;
+  height: 0;
   background-color: #ccc;
   position: absolute;
   right: 0;
   top: 0;
-  border-radius: 5px;
+  border-radius: 0;
   transition: height 0.1s linear;
+  -webkit-transition: height 0.1s linear;
   cursor: pointer;
 }
 
